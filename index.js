@@ -3,7 +3,7 @@ const app = express()
 const wsServer = require("express-ws")(app)
 const aWss = wsServer.getWss()
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 80
 
 app.ws('/', (ws, req) => {
     ws.on("message", (msg) => {
