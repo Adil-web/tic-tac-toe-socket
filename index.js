@@ -3,34 +3,27 @@ const app = express()
 const wsServer = require("express-ws")(app)
 const aWss = wsServer.getWss()
 
-const PORT = process.env.PORT || 80
+const port = process.env.PORT || 5000
 
-app.ws('/', (ws, req) => {
-    ws.on("message", (msg) => {
+app.ws("/", (ws) => {
+    ws.on("message", msg => {
         msg = JSON.parse(msg)
+        connectionHandler(ws, msg)
         console.log(msg)
-        switch (msg.method) {
-            case "connection":
-                connectionHandler(ws, msg)
-                break;
-            case "draw":
-                connectionHandler(ws, msg)
-                break;
-        }
     })
 })
 
-
-app.listen(PORT, () => console.log(`Server started on ${PORT}`))
-
-const connectionHandler = (ws, msg) => {
+function connectionHandler(ws, msg) {
     ws.id = msg.id
     broadcastConnection(ws, msg)
 }
-const broadcastConnection = (ws, msg) => {
+
+function broadcastConnection(ws, msg) {
     aWss.clients.forEach(client => {
         if(client.id === msg.id) {
             client.send(JSON.stringify(msg))
         }
     })
 }
+
+app.listen(port, () => console.log(`Server started on port ${port}`))
